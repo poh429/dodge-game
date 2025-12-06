@@ -275,13 +275,16 @@ export default function TaiwanStudentSurvival() {
   // --- Game Flow ---
   const prepareGame = (selectedMode) => {
     setMode(selectedMode);
+    setPlayerName('');
+    setSelectedSchool('');
+    setSchoolSearch('');
+    setShowSchoolList(false);
     setGameState('input_name');
   };
 
   const startGame = () => {
-    // Require school only for 1P; 2P only needs player/ team name
-    if (!playerName.trim() || (mode === 1 && !selectedSchool)) {
-      alert(mode === 1 ? "請輸入暱稱並選擇學校！" : "請輸入隊伍名稱！");
+    if (!playerName.trim() || !selectedSchool) {
+      alert("請輸入暱稱並選擇學校！");
       return;
     }
 
@@ -626,8 +629,7 @@ export default function TaiwanStudentSurvival() {
                   />
                 </div>
 
-                {mode === 1 && (
-                  <div className="relative">
+                <div className="relative">
                     <label className="block text-gray-400 text-sm mb-1">所屬學校 (School)</label>
                     <input 
                       type="text"
@@ -666,14 +668,13 @@ export default function TaiwanStudentSurvival() {
                       <div className="mt-1 text-green-400 text-xs text-right">✓ 已選擇: {selectedSchool}</div>
                     )}
                   </div>
-                )}
              </div>
 
              <div className="flex justify-center gap-4 mt-8">
                 <Button 
                   onClick={startGame} 
                   color="green" 
-                  disabled={!playerName.trim() || (mode === 1 && !selectedSchool)}
+                  disabled={!playerName.trim() || !selectedSchool}
                 >
                   開始挑戰
                 </Button>
@@ -753,7 +754,14 @@ export default function TaiwanStudentSurvival() {
                           </div>
                           <div className="text-xs text-cyan-300">{entry.school}</div>
                         </td>
-                        <td className="p-2 text-right text-green-400 font-mono text-base font-bold">{entry.score}</td>
+                        <td className="p-2 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-gray-700 text-gray-200 border border-gray-500">
+                              {entry.mode || 'ALL'}
+                            </span>
+                            <span className="text-green-400 font-mono text-base font-bold">{entry.score}</span>
+                          </div>
+                        </td>
                       </tr>
                     ))
                   )}
