@@ -279,8 +279,9 @@ export default function TaiwanStudentSurvival() {
   };
 
   const startGame = () => {
-    if (!playerName.trim() || !selectedSchool) {
-      alert("請輸入暱稱並選擇學校！");
+    // Require school only for 1P; 2P only needs player/ team name
+    if (!playerName.trim() || (mode === 1 && !selectedSchool)) {
+      alert(mode === 1 ? "請輸入暱稱並選擇學校！" : "請輸入隊伍名稱！");
       return;
     }
 
