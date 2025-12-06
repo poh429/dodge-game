@@ -295,11 +295,11 @@ export default function TaiwanStudentSurvival() {
     const startY = GAME_HEIGHT / 2;
     
     if (mode === 1) {
-      playersRef.current = [{ x: startX, y: startY, type: 0, id: 'p1', dead: false }];
+      playersRef.current = [{ x: startX, y: startY, type: 0, id: 'p1', dead: false, deathTime: null, invincibleUntil: 0 }];
     } else {
       playersRef.current = [
-        { x: startX - 40, y: startY, type: 0, id: 'p1', dead: false },
-        { x: startX + 40, y: startY, type: 1, id: 'p2', dead: false }
+        { x: startX - 40, y: startY, type: 0, id: 'p1', dead: false, deathTime: null, invincibleUntil: 0 },
+        { x: startX + 40, y: startY, type: 1, id: 'p2', dead: false, deathTime: null, invincibleUntil: 0 }
       ];
     }
     setGameState('playing');
@@ -376,13 +376,32 @@ export default function TaiwanStudentSurvival() {
 
       playersRef.current.forEach(p => {
         if (p.dead) return;
+        if (p.invincibleUntil && time < p.invincibleUntil) return;
         const dx = ball.x - p.x;
         const dy = ball.y - p.y;
         if (Math.sqrt(dx*dx + dy*dy) < ball.radius + PLAYER_SIZE/1.8) {
           p.dead = true;
+          p.deathTime = time;
         }
       });
     });
+
+    // Respawn logic for 2P: if partner survives 8s, revive at center with 1s invincibility
+    if (mode === 2) {
+      const alivePlayers = playersRef.current.filter(p => !p.dead);
+      const deadPlayers = playersRef.current.filter(p => p.dead && p.deathTime != null);
+      if (alivePlayers.length === 1 && deadPlayers.length >= 1) {
+        deadPlayers.forEach(p => {
+          if (time - p.deathTime >= 8000) {
+            p.dead = false;
+            p.deathTime = null;
+            p.x = GAME_WIDTH / 2;
+            p.y = GAME_HEIGHT / 2;
+            p.invincibleUntil = time + 1000;
+          }
+        });
+      }
+    }
 
     if (playersRef.current.every(p => p.dead)) {
       setFinalScore(Math.floor(scoreRef.current));
