@@ -278,7 +278,7 @@ export default function TaiwanStudentSurvival() {
     setPlayerName('');
     setSelectedSchool('');
     setSchoolSearch('');
-    setShowSchoolList(false);
+    setShowSchoolList(true); // keep school picker open to remind selection
     setGameState('input_name');
   };
 
@@ -757,7 +757,7 @@ export default function TaiwanStudentSurvival() {
                         <td className="p-2 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-gray-700 text-gray-200 border border-gray-500">
-                              {entry.mode || 'ALL'}
+                              {entry.mode || (entry.id?.includes('_2P') ? '2P' : entry.id?.includes('_1P') ? '1P' : 'ALL')}
                             </span>
                             <span className="text-green-400 font-mono text-base font-bold">{entry.score}</span>
                           </div>
